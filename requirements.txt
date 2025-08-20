@@ -1,0 +1,10 @@
+python-dotenv
+langchain
+langchain-qdrant
+pandas
+tiktoken
+langchain-openai
+langchain-community
+tqdm
+qdrant-client
+azure-storage-blob

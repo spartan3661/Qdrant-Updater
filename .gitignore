@@ -1,0 +1,19 @@
+# --------------------------------
+# Misc
+*.py[cod]
+*.pyo
+.vscode/
+
+# Dir
+.git/
+__pycache__/
+qdrant_data/
+.venv/
+venv/
+
+# Individual Files
+.python-version
+.env
+posts.csv
+test.py
+test2.py
