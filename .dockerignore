@@ -1,0 +1,13 @@
+/__pycache__/
+qdrant_data/
+venv/
+/venv/
+
+*.csv
+
+test.py
+test2.py
+.env
+.python-version
+
+

@@ -8,3 +8,4 @@ langchain-community
 tqdm
 qdrant-client
 azure-storage-blob
+html2text
