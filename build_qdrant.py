@@ -11,6 +11,7 @@ from tqdm import tqdm
 import os
 import time
 import tiktoken
+import uuid
 from azure_blob_utils import download_blob
 
 def update_qdrant():
@@ -43,8 +44,8 @@ def update_qdrant():
 
     documents = [
         Document(
-            page_content=f"{str(row['title']).strip()} {str(row['content']).strip()}",
-            metadata={"date": row["date"], "author": row["author"], "link": row["link"]}
+            page_content=f"{str(row['title']).strip()}\n\n{str(row['content']).strip()}",
+            metadata={"title": row["title"], "date": row["date"], "author": row["author"], "link": row["link"]}
         )
         for _, row in posts_df.iterrows()
     ]
@@ -59,12 +60,22 @@ def update_qdrant():
     splits = text_splitter.split_documents(documents)
     splits_id = [str(uuid.uuid4()) for _ in splits]
 
+
+    splits_id = []
+    for doc_idx, doc in enumerate(splits):
+        link = (doc.metadata or {}).get("link", "")
+
+        key = f"{link}||{doc_idx}"
+        uid = uuid.uuid5(uuid.NAMESPACE_URL, key)
+        splits_id.append(str(uid))  
+
     texts = [doc.page_content for doc in splits]
     metadatas = [doc.metadata for doc in splits]
 
     # -------------------- Qdrant Setup -----------------------
-    qdrant_client = QdrantClient(host=os.getenv("QDRANT_HOST"), port=os.getenv("QDRANT_PORT"))
+    qdrant_client = QdrantClient(host=os.getenv("QDRANT_HOST"), port=os.getenv("QDRANT_PORT"), api_key=os.getenv("QDRANT_API"), https=False)
     collection_name = "articles"
+
     if not qdrant_client.collection_exists(collection_name):
         qdrant_client.create_collection(
             collection_name=collection_name,
